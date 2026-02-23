@@ -1,0 +1,66 @@
+{
+  "name": "@cooperation/claim-atproto",
+  "version": "0.1.0",
+  "description": "TypeScript library for creating and publishing linked claims on ATProto",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write 'src/**/*.ts'",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "atproto",
+    "bluesky",
+    "claims",
+    "verifiable-credentials",
+    "linkedclaims",
+    "did"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "dependencies": {
+    "@atproto/api": "^0.13.0",
+    "@atproto/lexicon": "^0.4.1",
+    "multiformats": "^13.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
+    "@typescript-eslint/parser": "^8.19.1",
+    "@vitest/ui": "^2.1.8",
+    "eslint": "^9.17.0",
+    "prettier": "^3.4.2",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "peerDependencies": {
+    "@atproto/api": ">=0.12.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
