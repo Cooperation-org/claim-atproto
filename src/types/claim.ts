@@ -52,8 +52,11 @@ export interface EmbeddedProof {
 /**
  * A LinkedClaim-style verifiable claim record.
  * Claims are immutable, signed assertions about any URI-addressable subject.
+ * Per the DIF Labs LinkedClaims spec, each claim MUST have a persistent URI (claimUri).
  */
 export interface Claim {
+  /** Persistent URI identity of this claim per the DIF Labs LinkedClaims spec. How other claims reference this one. If not set before publishing, the AT-URI becomes the claimUri. */
+  claimUri?: string
   /** The entity this claim is about. Can be any URI: https URL, DID, AT-URI (for claims-about-claims), IPFS CID, etc. */
   subject: string
   /** Category of claim: skill, credential, impact, endorsement, dispute, rating, review, membership, etc. */
@@ -68,12 +71,16 @@ export interface Claim {
   createdAt: string
   /** When the claim became/becomes true (may differ from createdAt) */
   effectiveDate?: string
+  /** URI where endorsements, disputes, or other responses may be sent */
+  respondAt?: string
   /** For claims signed by external methods (MetaMask, aca-py, etc.) before being published to ATProto */
   embeddedProof?: EmbeddedProof
   /** Signer's confidence in this claim (0-1) */
   confidence?: number
   /** Star rating (for rating-type claims, 1-5) */
   stars?: number
+  /** The specific aspect being rated or assessed */
+  aspect?: string
 }
 
 /**

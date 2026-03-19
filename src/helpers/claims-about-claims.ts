@@ -24,7 +24,7 @@ export interface EndorsementOptions {
  * @example
  * ```typescript
  * const endorsement = createEndorsement(
- *   'at://did:plc:alice/community.claim/3kfxyz',
+ *   'at://did:plc:alice/com.linkedclaims.claim/3kfxyz',
  *   'I can confirm Alice has these skills',
  *   { confidence: 1.0, howKnown: 'FIRST_HAND' }
  * ).build()
@@ -77,7 +77,7 @@ export interface DisputeOptions {
  * @example
  * ```typescript
  * const dispute = createDispute(
- *   'at://did:plc:alice/community.claim/3kfxyz',
+ *   'at://did:plc:alice/com.linkedclaims.claim/3kfxyz',
  *   'The count was actually 200, not 500',
  *   {
  *     evidence: 'https://example.org/actual-count.pdf',
@@ -123,7 +123,7 @@ export function createDispute(
  * @example
  * ```typescript
  * const superseding = createSuperseding(
- *   'at://did:plc:alice/community.claim/old123',
+ *   'at://did:plc:alice/com.linkedclaims.claim/old123',
  *   'Updated skill level after additional 2 years of experience'
  * )
  *   .object('Senior React Developer')
@@ -156,7 +156,7 @@ export function createSuperseding(
  * @example
  * ```typescript
  * const revocation = createRevocation(
- *   'at://did:plc:alice/community.claim/xyz789',
+ *   'at://did:plc:alice/com.linkedclaims.claim/xyz789',
  *   'Information was found to be inaccurate'
  * ).build()
  *

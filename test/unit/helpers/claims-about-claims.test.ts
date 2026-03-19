@@ -7,7 +7,7 @@ import {
 } from '../../../src/helpers'
 
 describe('claims-about-claims', () => {
-  const claimUri = 'at://did:plc:alice/community.claim/3kfxyz'
+  const claimUri = 'at://did:plc:alice/com.linkedclaims.claim/3kfxyz'
 
   describe('createEndorsement', () => {
     it('should create an endorsement claim', () => {

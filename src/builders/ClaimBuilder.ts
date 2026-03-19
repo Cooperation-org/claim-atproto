@@ -21,6 +21,15 @@ export class ClaimBuilder {
   private claim: Partial<Claim> = {}
 
   /**
+   * Set the persistent URI identity of this claim (required)
+   * @param uri - Persistent URI for this claim per the DIF Labs LinkedClaims spec
+   */
+  claimUri(uri: string): this {
+    this.claim.claimUri = uri
+    return this
+  }
+
+  /**
    * Set the subject of the claim (required)
    * @param subject - URI of what this claim is about (DID, URL, AT-URI, IPFS CID, etc.)
    */
@@ -83,6 +92,24 @@ export class ClaimBuilder {
    */
   effectiveDate(date: Date | string): this {
     this.claim.effectiveDate = typeof date === 'string' ? date : date.toISOString()
+    return this
+  }
+
+  /**
+   * Set the respondAt URI (where endorsements/responses should be sent)
+   * @param uri - URI for the response inbox
+   */
+  respondAt(uri: string): this {
+    this.claim.respondAt = uri
+    return this
+  }
+
+  /**
+   * Set the aspect being rated or assessed
+   * @param aspect - e.g., quality, reliability, timeliness
+   */
+  aspect(aspect: string): this {
+    this.claim.aspect = aspect
     return this
   }
 

@@ -55,17 +55,24 @@ export class ClaimClient {
       validateClaim(claim)
     }
 
+    // If no claimUri set, it will be the AT-URI after publishing
+    const recordToPublish = claim.claimUri ? claim : { ...claim }
+
     const result = await this.agent.com.atproto.repo.createRecord({
       repo: this.agent.session.did,
-      collection: 'community.claim',
-      record: claim,
+      collection: 'com.linkedclaims.claim',
+      record: recordToPublish,
     })
 
-    return {
+    // If claimUri wasn't set, the AT-URI becomes the claimUri
+    const published: PublishedClaim = {
       ...claim,
+      claimUri: claim.claimUri || result.data.uri,
       uri: result.data.uri,
       cid: result.data.cid,
     }
+
+    return published
   }
 
   /**
@@ -82,14 +89,17 @@ export class ClaimClient {
       validateClaim(claim)
     }
 
+    const recordToPublish = claim.claimUri ? claim : { ...claim }
+
     const result = await this.agent.com.atproto.repo.createRecord({
       repo,
-      collection: 'community.claim',
-      record: claim,
+      collection: 'com.linkedclaims.claim',
+      record: recordToPublish,
     })
 
-    return {
+    const published: PublishedClaim = {
       ...claim,
+      claimUri: claim.claimUri || result.data.uri,
       uri: result.data.uri,
       cid: result.data.cid,
     }
@@ -98,9 +108,9 @@ export class ClaimClient {
   /**
    * Get a claim by its AT-URI
    *
-   * @param uri - The AT-URI of the claim (e.g., at://did:plc:xxx/community.claim/tid)
+   * @param uri - The AT-URI of the claim (e.g., at://did:plc:xxx/com.linkedclaims.claim/tid)
    * @returns The claim if found, null otherwise
-   * @throws {Error} if URI is invalid or not a community.claim URI
+   * @throws {Error} if URI is invalid or not a com.linkedclaims.claim URI
    */
   async get(uri: string): Promise<Claim | null> {
     // Parse AT-URI: at://did/collection/rkey
@@ -110,8 +120,8 @@ export class ClaimClient {
     }
 
     const [, repo, collection, rkey] = match
-    if (collection !== 'community.claim') {
-      throw new Error('Not a community.claim URI. Expected collection: community.claim')
+    if (collection !== 'com.linkedclaims.claim') {
+      throw new Error('Not a com.linkedclaims.claim URI. Expected collection: com.linkedclaims.claim')
     }
 
     try {
@@ -144,8 +154,8 @@ export class ClaimClient {
     }
 
     const [, repo, collection, rkey] = match
-    if (collection !== 'community.claim') {
-      throw new Error('Not a community.claim URI. Expected collection: community.claim')
+    if (collection !== 'com.linkedclaims.claim') {
+      throw new Error('Not a com.linkedclaims.claim URI. Expected collection: com.linkedclaims.claim')
     }
 
     await this.agent.com.atproto.repo.deleteRecord({
