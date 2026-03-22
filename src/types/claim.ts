@@ -32,6 +32,21 @@ export interface ClaimSource {
 }
 
 /**
+ * A piece of supporting material for a claim.
+ * Evidence is what backs up the claim; source is where the claim comes from.
+ */
+export interface EvidenceItem {
+  /** URI of the evidence (HTTPS URL, IPFS CID, AT-URI, etc.) */
+  uri?: string
+  /** Multibase-encoded hash of the content for integrity verification */
+  digestMultibase?: string
+  /** MIME type (e.g., image/jpeg, video/mp4, application/pdf) */
+  mediaType?: string
+  /** What this evidence shows or contains */
+  description?: string
+}
+
+/**
  * Cryptographic proof from external signing methods.
  * Allows claims signed via MetaMask, aca-py, Digital Bazaar, etc. to be published on ATProto
  * while preserving the original signer identity.
@@ -65,8 +80,10 @@ export interface Claim {
   object?: string
   /** Human-readable explanation of the claim (max 10000 characters) */
   statement?: string
-  /** Structured evidence/provenance for this claim */
+  /** Where this claim comes from — a person, website, document */
   source?: ClaimSource
+  /** Supporting materials — photos, videos, screenshots, documents */
+  evidence?: EvidenceItem[]
   /** When this record was created */
   createdAt: string
   /** When the claim became/becomes true (may differ from createdAt) */

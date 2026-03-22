@@ -37,7 +37,12 @@
           "source": {
             "type": "ref",
             "ref": "#claimSource",
-            "description": "Structured evidence/provenance for this claim."
+            "description": "Where this claim comes from — a person, a website, a document. For example: 'I saw this on Wikipedia' (source.uri = the Wikipedia URL), or 'My colleague told me' (source.uri = their DID, howKnown = SECOND_HAND). Source is not evidence — it's the origin of the information."
+          },
+          "evidence": {
+            "type": "array",
+            "description": "Supporting materials provided to back up this claim — photos, videos, screenshots, documents, links. For example: source might be a Wikipedia article, evidence is the screenshot you took of it. Source might be you (first-hand), evidence is the video you recorded. Each item has a URI and optionally a content hash for integrity.",
+            "items": { "type": "ref", "ref": "#evidenceItem" }
           },
           "createdAt": {
             "type": "string",
@@ -80,7 +85,7 @@
     },
     "claimSource": {
       "type": "object",
-      "description": "Structured provenance/evidence for a claim. Based on the cooperation.org/credentials/v1 ClaimSource vocabulary and the LinkedClaims SHOULD requirement for hashlinked evidence.",
+      "description": "Where this claim comes from. A source can be a person (DID, URL), a website, a document, or any URI-addressable origin. Based on the cooperation.org/credentials/v1 ClaimSource vocabulary.",
       "properties": {
         "uri": {
           "type": "string",
@@ -120,6 +125,30 @@
           "type": "string",
           "format": "uri",
           "description": "Entity that curated/surfaced this evidence."
+        }
+      }
+    },
+    "evidenceItem": {
+      "type": "object",
+      "description": "A piece of supporting material for a claim — a photo, video, screenshot, document, or link. Evidence is what backs up the claim; source is where the claim comes from.",
+      "properties": {
+        "uri": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI of the evidence (HTTPS URL, IPFS CID, AT-URI, blob reference, etc.)."
+        },
+        "digestMultibase": {
+          "type": "string",
+          "description": "Multibase-encoded hash of the content for integrity verification (e.g., zQm...)."
+        },
+        "mediaType": {
+          "type": "string",
+          "description": "MIME type of the evidence (e.g., image/jpeg, video/mp4, application/pdf)."
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "What this evidence shows or contains."
         }
       }
     },

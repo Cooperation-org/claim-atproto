@@ -1,4 +1,4 @@
-import type { Claim, ClaimSource, EmbeddedProof } from '../types'
+import type { Claim, ClaimSource, EmbeddedProof, EvidenceItem } from '../types'
 import { SourceBuilder } from './SourceBuilder'
 import { ProofBuilder } from './ProofBuilder'
 
@@ -92,6 +92,16 @@ export class ClaimBuilder {
    */
   effectiveDate(date: Date | string): this {
     this.claim.effectiveDate = typeof date === 'string' ? date : date.toISOString()
+    return this
+  }
+
+  /**
+   * Add an evidence item (photo, video, document, etc.)
+   * @param item - Evidence item with uri, mediaType, description, digestMultibase
+   */
+  addEvidence(item: EvidenceItem): this {
+    if (!this.claim.evidence) this.claim.evidence = []
+    this.claim.evidence.push(item)
     return this
   }
 
