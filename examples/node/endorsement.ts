@@ -22,7 +22,7 @@ async function main() {
 
   // The URI of the claim you want to endorse
   // Replace with an actual claim URI
-  const claimToEndorse = 'at://did:plc:alice/community.claim/3kfxyz'
+  const claimToEndorse = 'at://did:plc:alice/com.linkedclaims.claim/3kfxyz'
 
   // Create an endorsement
   const endorsement = createEndorsement(

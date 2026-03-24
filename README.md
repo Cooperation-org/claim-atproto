@@ -2,7 +2,12 @@
 
 > TypeScript library for creating and publishing linked claims on ATProto (Bluesky)
 
-A composable, type-safe library for working with verifiable claims on the AT Protocol. Implements the [LinkedClaims](https://github.com/decentralized-identity/labs-linkedclaims) specification from the Decentralized Identity Foundation (DIF).
+Also published as `@linked-claims/claim-atproto`.
+
+A composable, type-safe library for working with verifiable claims on the AT Protocol. Implements the [LinkedClaims](https://identity.foundation/labs-linkedclaims/) specification from the Decentralized Identity Foundation (DIF).
+
+**Start here:** [LinkedClaims repo](https://github.com/Cooperation-org/LinkedClaims) — spec, docs, field reference, and the core SDK (`@cooperation/linkedclaims`).
+**Field Reference:** [docs/field-reference.md](https://github.com/Cooperation-org/LinkedClaims/blob/main/docs/field-reference.md) — the canonical contract for all claim fields.
 
 ## Features
 
@@ -10,7 +15,7 @@ A composable, type-safe library for working with verifiable claims on the AT Pro
 - ✅ **ATProto Native** - Seamless integration with Bluesky/ATProto
 - ✅ **Claims-about-Claims** - Built-in support for endorsements, disputes, revocations
 - ✅ **Content Hashing** - Compute integrity hashes for evidence
-- ✅ **Schema Validation** - Automatic validation against the `community.claim` lexicon
+- ✅ **Schema Validation** - Automatic validation against the `com.linkedclaims.claim` lexicon
 - ✅ **Universal** - Works in Node.js and browser environments
 - ✅ **TypeScript** - Full type safety with excellent IDE support
 
@@ -78,7 +83,7 @@ import { createEndorsement } from '@cooperation/claim-atproto'
 
 // Endorse another claim
 const endorsement = createEndorsement(
-  'at://did:plc:alice/community.claim/xyz123',
+  'at://did:plc:alice/com.linkedclaims.claim/xyz123',
   'I can confirm Alice has these skills',
   { confidence: 1.0, howKnown: 'FIRST_HAND' }
 ).build()
@@ -178,7 +183,7 @@ await client.publish(claim)
 import { createEndorsement } from '@cooperation/claim-atproto'
 
 const endorsement = createEndorsement(
-  'at://did:plc:bob/community.claim/abc123',
+  'at://did:plc:bob/com.linkedclaims.claim/abc123',
   'I worked with Bob for 2 years and can confirm his skills',
   { confidence: 1.0, howKnown: 'FIRST_HAND' }
 ).build()
@@ -192,7 +197,7 @@ await client.publish(endorsement)
 import { createDispute } from '@cooperation/claim-atproto'
 
 const dispute = createDispute(
-  'at://did:plc:alice/community.claim/xyz789',
+  'at://did:plc:alice/com.linkedclaims.claim/xyz789',
   'The actual count was 200, not 500',
   {
     evidence: 'https://evidence.org/actual-count.pdf',
@@ -261,7 +266,7 @@ For external signing (MetaMask, DIDs, etc.), see the `embeddedProof` field in th
 
 ## Validation
 
-Claims are automatically validated against the `community.claim` lexicon before publishing:
+Claims are automatically validated against the `com.linkedclaims.claim` lexicon before publishing:
 
 ```typescript
 import { validateClaim, isValidClaim } from '@cooperation/claim-atproto'
@@ -327,9 +332,51 @@ npm run type-check
 npx tsx examples/node/basic-claim.ts
 ```
 
+## Lexicon: `com.linkedclaims.claim`
+
+The lexicon definition is at `src/lexicons/com-linkedclaims-claim.json`. Key fields:
+
+- **`subject`** (required) — URI the claim is about. Any URI: HTTPS, DID, AT-URI, IPFS CID
+- **`claimType`** (required) — category: skill, credential, impact, endorsement, dispute, rating, etc.
+- **`claimUri`** — persistent identity of this claim. Other claims reference it as their subject
+- **`statement`** — human-readable explanation
+- **`source`** — where the claim info comes from (uri, howKnown, digestMultibase, dateObserved, author, curator)
+- **`evidence[]`** — supporting materials: photos, videos, documents (uri, digestMultibase, mediaType, description)
+- **`confidence`** — signer's confidence (0-1)
+- **`stars`** — star rating (1-5)
+- **`respondAt`** — URI for sending endorsements/disputes
+- **`embeddedProof`** — for claims signed externally (MetaMask, etc.) before publishing to ATProto
+
+### Namespace Ownership
+
+`com.linkedclaims.claim` maps to `linkedclaims.com`. DNS verification via TXT record on `_atproto.linkedclaims.com`.
+
+### Architecture
+
+ATProto is one publication channel — not the canonical home. Claims are signed assertions that can exist in multiple systems. The LinkedTrust backend (`trust_claim_backend`) acts as an **AppView**: it subscribes to the ATProto firehose via Jetstream, indexes `com.linkedclaims.claim` records from ALL publishers, and provides query/aggregation APIs.
+
+When a claim is published to ATProto, its AT-URI (`at://did:plc:xyz/com.linkedclaims.claim/tid`) becomes its permanent decentralized address. Other claims can reference it by setting `subject` to that AT-URI — this is how endorsements, disputes, and other claims-about-claims work.
+
+## Embeddable Web Component
+
+A `<linked-claims-atproto>` web component is available for embedding ATProto claim feeds on any web page:
+
+```html
+<!-- Show claims about this page -->
+<linked-claims-atproto api="https://live.linkedtrust.us"></linked-claims-atproto>
+
+<!-- Show claims about a specific URL -->
+<linked-claims-atproto subject="https://example.com" api="https://live.linkedtrust.us"></linked-claims-atproto>
+
+<!-- Browse a specific user's claims (no backend needed) -->
+<linked-claims-atproto repo="did:plc:xztctnvt5ycnsippd3orwqk7" subject="*"></linked-claims-atproto>
+```
+
+Source: `trust_claim/public/atproto-claims.js` (will move into this SDK as a built artifact).
+
 ## Related Projects
 
-- **[claim-lexicon](https://github.com/yourusername/claim-lexicon)** - The `community.claim` lexicon specification
+- **[claim-lexicon](https://github.com/Cooperation-org/claim-atproto)** - The `com.linkedclaims.claim` lexicon specification
 - **[@atproto/api](https://www.npmjs.com/package/@atproto/api)** - ATProto SDK
 - **[LinkedClaims](https://github.com/decentralized-identity/labs-linkedclaims)** - DIF specification
 
@@ -343,6 +390,6 @@ Contributions welcome! Please open an issue or PR.
 
 ## Questions?
 
-- **Lexicon Issues:** Report at the [claim-lexicon repo](https://github.com/yourusername/claim-lexicon/issues)
+- **Lexicon Issues:** Report at the [claim-lexicon repo](https://github.com/Cooperation-org/claim-atproto/issues)
 - **Library Issues:** Open an issue in this repo
 - **ATProto Questions:** See [ATProto docs](https://atproto.com)
