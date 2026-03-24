@@ -103,6 +103,8 @@ export class ClaimClient {
       uri: result.data.uri,
       cid: result.data.cid,
     }
+
+    return published
   }
 
   /**
