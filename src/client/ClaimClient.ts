@@ -13,6 +13,30 @@ export interface ClaimClientConfig {
 }
 
 /**
+ * Options for listing claims from a repository
+ */
+export interface ListClaimsOptions {
+  /** DID of the repository to list claims from */
+  repo: string
+  /** Maximum number of claims to return (default: 50, max: 100) */
+  limit?: number
+  /** Cursor for pagination (from a previous list result) */
+  cursor?: string
+  /** Reverse the order of results */
+  reverse?: boolean
+}
+
+/**
+ * Result of listing claims from a repository
+ */
+export interface ListClaimsResult {
+  /** The claims found in the repository */
+  claims: PublishedClaim[]
+  /** Cursor for fetching the next page, undefined if no more results */
+  cursor?: string
+}
+
+/**
  * Client for publishing and managing claims on ATProto.
  * Handles claim publishing, retrieval, and deletion using the authenticated agent.
  *
@@ -165,5 +189,50 @@ export class ClaimClient {
       collection,
       rkey,
     })
+  }
+
+  /**
+   * List claims from a repository.
+   *
+   * Note: ATProto's listRecords API does not support server-side filtering by subject.
+   * To filter by subject, filter the returned claims array client-side.
+   *
+   * @param options - Repository and pagination options
+   * @returns List of published claims and an optional cursor for the next page
+   *
+   * @example
+   * ```typescript
+   * const result = await client.list({ repo: 'did:plc:alice' })
+   * for (const claim of result.claims) {
+   *   console.log(claim.subject, claim.claimType)
+   * }
+   *
+   * // Paginate
+   * if (result.cursor) {
+   *   const next = await client.list({ repo: 'did:plc:alice', cursor: result.cursor })
+   * }
+   * ```
+   */
+  async list(options: ListClaimsOptions): Promise<ListClaimsResult> {
+    const { repo, limit = 50, cursor, reverse } = options
+
+    const result = await this.agent.com.atproto.repo.listRecords({
+      repo,
+      collection: 'com.linkedclaims.claim',
+      limit,
+      cursor,
+      reverse,
+    })
+
+    const claims: PublishedClaim[] = result.data.records.map((record: any) => ({
+      ...(record.value as Claim),
+      uri: record.uri,
+      cid: record.cid,
+    }))
+
+    return {
+      claims,
+      cursor: result.data.cursor,
+    }
   }
 }
