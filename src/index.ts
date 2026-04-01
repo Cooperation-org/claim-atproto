@@ -23,7 +23,7 @@ export {
   validateClaim,
   isValidClaim,
 } from './client'
-export type { ClaimClientConfig } from './client'
+export type { ClaimClientConfig, ListClaimsOptions, ListClaimsResult } from './client'
 
 // Helper exports
 export {
@@ -33,5 +33,6 @@ export {
   createDispute,
   createSuperseding,
   createRevocation,
+  mapDatabaseClaim,
 } from './helpers'
-export type { EndorsementOptions, DisputeOptions } from './helpers'
+export type { EndorsementOptions, DisputeOptions, DatabaseClaim, MapDatabaseClaimOptions } from './helpers'

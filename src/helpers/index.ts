@@ -6,3 +6,5 @@ export {
   createRevocation,
 } from './claims-about-claims'
 export type { EndorsementOptions, DisputeOptions } from './claims-about-claims'
+export { mapDatabaseClaim } from './database-mapper'
+export type { DatabaseClaim, MapDatabaseClaimOptions } from './database-mapper'

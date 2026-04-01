@@ -127,6 +127,7 @@ const claim = createClaim()
   - `.publish(claim)` - Publish to your repository
   - `.publishTo(did, claim)` - Publish to another repository
   - `.get(uri)` - Fetch a claim by AT-URI
+  - `.list({ repo, limit?, cursor?, reverse? })` - List claims from a repository
   - `.delete(uri)` - Delete a claim
 
 ### Helpers
@@ -137,6 +138,7 @@ const claim = createClaim()
 - **`createRevocation(uri, reason)`** - Create a revocation
 - **`computeDigestMultibase(content)`** - Hash content for integrity
 - **`fetchAndHash(uri)`** - Fetch and hash remote content
+- **`mapDatabaseClaim(dbClaim, options?)`** - Map a flat DB row to an ATProto claim record
 
 ### Validation
 
@@ -222,6 +224,52 @@ const rating = createClaim()
 await client.publish(rating)
 ```
 
+### Listing Claims
+
+List all claims from a repository with pagination:
+
+```typescript
+// List claims from a repo
+const result = await client.list({ repo: 'did:plc:alice' })
+for (const claim of result.claims) {
+  console.log(claim.subject, claim.claimType, claim.uri)
+}
+
+// Paginate through all claims
+let cursor: string | undefined
+do {
+  const page = await client.list({ repo: 'did:plc:alice', limit: 25, cursor })
+  for (const claim of page.claims) {
+    console.log(claim.uri)
+  }
+  cursor = page.cursor
+} while (cursor)
+
+// Client-side filtering (ATProto doesn't support server-side subject filtering)
+const result2 = await client.list({ repo: 'did:plc:alice' })
+const skillClaims = result2.claims.filter(c => c.claimType === 'skill')
+```
+
+### Database Mapper
+
+Convert flat database rows (Prisma/SQL) to ATProto claim records:
+
+```typescript
+import { mapDatabaseClaim, ClaimClient } from '@cooperation/claim-atproto'
+
+// Map a Prisma row to an ATProto claim
+const dbRow = await prisma.claim.findFirst({ where: { id: 123 } })
+const claim = mapDatabaseClaim(dbRow, { baseUrl: 'https://myapp.com' })
+await client.publish(claim)
+
+// Field mapping:
+//   dbRow.claim       → claim.claimType
+//   dbRow.sourceURI   → claim.source.uri
+//   dbRow.howKnown    → claim.source.howKnown
+//   dbRow.claimAddress → claim.claimUri
+//   dbRow.proof (JSON) + issuerId → claim.embeddedProof
+```
+
 ## TypeScript Types
 
 Full TypeScript support with exported types:
@@ -234,6 +282,10 @@ import type {
   PublishedClaim,
   HowKnown,
   ClaimClientConfig,
+  ListClaimsOptions,
+  ListClaimsResult,
+  DatabaseClaim,
+  MapDatabaseClaimOptions,
 } from '@cooperation/claim-atproto'
 ```
 

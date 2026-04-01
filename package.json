@@ -1,6 +1,6 @@
 {
   "name": "@cooperation/claim-atproto",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "TypeScript library for creating and publishing linked claims on ATProto",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -39,7 +39,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/Cooperation-org/claim-atproto.git"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "@atproto/api": "^0.13.0",

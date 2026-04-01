@@ -65,7 +65,7 @@
             "description": "For claims signed by external methods (MetaMask, aca-py, Digital Bazaar, etc.) before being published to ATProto. Preserves the original signer identity when the ATProto repo owner differs from the claim signer."
           },
           "confidence": {
-            "type": "number",
+            "type": "string",
             "minimum": 0,
             "maximum": 1,
             "description": "Signer's confidence in this claim (0-1)."
